@@ -22,10 +22,12 @@ def lambda_handler(event, context):
     
         # 새로운 회원 데이터를 추가
         for data in event_data:
-            id, dormitory_code, name, phone_number, birthday = data
+            dormitory_code, name, phone_number, birthday = data
             # 기존 회원 username에서 일치하는 회원 정보가 없는 경우에만 추가
             if dormitory_code not in existing_usernames:
                 cursor.execute("INSERT INTO domtory.member (username, password, name, phone_number, birthday, status) VALUES (%s, %s, %s, %s, %s, 'ACTIVE')", (dormitory_code, birthday, name, phone_number, birthday))
+                member_id = cursor.lastrowid  # 새로 추가된 회원의 ID를 가져옴
+                cursor.execute("INSERT INTO domtory.notification_detail (breakfast, lunch, dinner, lightning_post, comment, reply, member_id) VALUES (1, 1, 1, 1, 1, 1, %s)", (member_id,))
         conn.commit()
         
     return {
